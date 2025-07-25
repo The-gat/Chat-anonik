@@ -1,1 +1,106 @@
-# Chat-anonik
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Anónimo</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    #chat {
+      flex: 1;
+      overflow-y: scroll;
+      padding: 1em;
+      background: #1a1a1a;
+    }
+    #form {
+      display: flex;
+      background: #222;
+      padding: 0.5em;
+    }
+    #message {
+      flex: 1;
+      padding: 0.5em;
+      font-size: 1em;
+      border: none;
+      border-radius: 4px;
+    }
+    #send {
+      padding: 0.5em 1em;
+      margin-left: 0.5em;
+      background: #0f0;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .msg {
+      margin-bottom: 0.5em;
+      padding: 0.5em;
+      background: #333;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="chat"></div>
+<form id="form" onsubmit="return false;">
+  <input type="text" id="message" placeholder="Escribe tu mensaje..." autocomplete="off">
+  <button id="send">Enviar</button>
+</form>
+
+<!-- Firebase -->
+<script type="module">
+  // Tu configuración Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBWpoVi_hQOQgeVjZQJNBsH_BHJz56FmdQ",
+    authDomain: "anonik-ca5b9.firebaseapp.com",
+    databaseURL: "https://anonik-ca5b9-default-rtdb.firebaseio.com",
+    projectId: "anonik-ca5b9",
+    storageBucket: "anonik-ca5b9.firebasestorage.app",
+    messagingSenderId: "468271918645",
+    appId: "1:468271918645:web:303a84038aa2f591798b7c",
+    measurementId: "G-Z2C0EZK5VQ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const chatRef = ref(db, "mensajes");
+
+  const chat = document.getElementById("chat");
+  const form = document.getElementById("form");
+  const input = document.getElementById("message");
+
+  // Mostrar nuevos mensajes
+  onChildAdded(chatRef, (data) => {
+    const msg = document.createElement("div");
+    msg.className = "msg";
+    msg.textContent = data.val().texto;
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
+  });
+
+  // Enviar mensaje
+  document.getElementById("send").addEventListener("click", () => {
+    if (input.value.trim() !== "") {
+      push(chatRef, {
+        texto: input.value.trim()
+      });
+      input.value = "";
+    }
+  });
+</script>
+
+</body>
+</html>
